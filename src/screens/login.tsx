@@ -1,11 +1,11 @@
 import { useState } from "react"
 import { undoToast } from "@/lib/utils"
-import { FcGoogle } from "react-icons/fc";
-import { GrGithub } from "react-icons/gr";
+import { FcGoogle } from "react-icons/fc"
+import { GrGithub } from "react-icons/gr"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
-import { signIn, signUp } from "@/hooks/authProvider"
+import { signIn, signUp, signInGoogle, signInGitHub } from "@/hooks/authProvider"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 
@@ -31,13 +31,16 @@ export default function Login() {
         if (register.error)
             return undoToast("Failed to Register", register.error.message)
 
-        undoToast("Registered!", "You are now connected to the project.")
+        undoToast("Registered!", "Check your email to confirm your account.")
     }
 
     return (<div className="w-screen h-screen flex items-center justify-center relative">
 
         <Tabs defaultValue="login" className="w-[400px] relative px-1">
-            <h1 className="text-3xl absolute -top-16 right-[5.8rem]">Using Supabase</h1>
+            <div className="flex gap-4 items-center text-3xl absolute -top-24 right-16">
+                <img src="supabase-logo-icon.png" alt="Supabase" className="w-16 h-16" />
+                Using Supabase
+            </div>
 
             <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="login">Login</TabsTrigger>
@@ -67,8 +70,8 @@ export default function Login() {
                     <CardFooter className="flex flex-col">
                         <Button className='w-full' onClick={login}>Confirm</Button>
                         <p>or</p>
-                        <Button className='w-full mb-2' variant='outline' onClick={() => { }}> <FcGoogle /> Log In with Google</Button>
-                        <Button className='w-full' variant='outline' onClick={() => { }}> <GrGithub /> Log In with GitHub</Button>
+                        <Button className='w-full mb-2' variant='outline' onClick={signInGoogle}> <FcGoogle /> Log In with Google</Button>
+                        <Button className='w-full' variant='outline' onClick={signInGitHub}> <GrGithub /> Log In with GitHub</Button>
 
                     </CardFooter>
                 </Card>
@@ -94,8 +97,11 @@ export default function Login() {
                                 onChange={(e) => { setNewPassword(e.target.value) }} />
                         </div>
                     </CardContent>
-                    <CardFooter>
-                        <Button onClick={register}>Register</Button>
+                    <CardFooter className="flex flex-col">
+                        <Button className='w-full' onClick={register}>Register</Button>
+                        <p>or</p>
+                        <Button className='w-full mb-2' variant='outline' onClick={signInGoogle}> <FcGoogle /> Register with Google</Button>
+                        <Button className='w-full' variant='outline' onClick={signInGitHub}> <GrGithub /> Register with GitHub</Button>
                     </CardFooter>
                 </Card>
             </TabsContent>

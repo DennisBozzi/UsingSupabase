@@ -1,6 +1,6 @@
-import Home from './screens/home';
-import Login from './screens/login';
-import { Toaster } from 'sonner';
+import Home from './screens/home'
+import Login from './screens/login'
+import { Toaster } from 'sonner'
 import { useAuth } from '@/hooks/authProvider'
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
 
@@ -14,7 +14,7 @@ export default function App() {
     {
       path: "/Home", element: (session ? <Home /> : <Navigate to="/" />)
     },
-  ]);
+  ]); 
 
   return (
     <>

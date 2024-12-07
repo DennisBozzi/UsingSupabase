@@ -42,9 +42,23 @@ async function signIn(email: string, password: string) {
 async function signUp(email: string, password: string) {
     const { data, error } = await supabase.auth.signUp({
         email: email,
-        password: password
+        password: password,
     });
     return { data, error }
 }
 
-export { useAuth, signOut, signIn, signUp }
+async function signInGoogle() {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+    })
+    return { data, error };
+}
+
+async function signInGitHub() {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'github',
+    })
+    return { data, error };
+}
+
+export { useAuth, signOut, signIn, signUp, signInGoogle, signInGitHub }
