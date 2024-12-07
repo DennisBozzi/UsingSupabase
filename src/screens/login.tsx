@@ -1,5 +1,7 @@
 import { useState } from "react"
 import { undoToast } from "@/lib/utils"
+import { FcGoogle } from "react-icons/fc";
+import { GrGithub } from "react-icons/gr";
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
@@ -25,22 +27,18 @@ export default function Login() {
 
     const register = async () => {
         const register = await signUp(newEmail, newPassword);
-        console.log(register)
-
 
         if (register.error)
             return undoToast("Failed to Register", register.error.message)
 
-
         undoToast("Registered!", "You are now connected to the project.")
     }
 
+    return (<div className="w-screen h-screen flex items-center justify-center relative">
 
-    return (<div className="flex flex-col gap-8 items-center justify-center h-screen">
+        <Tabs defaultValue="login" className="w-[400px] relative px-1">
+            <h1 className="text-3xl absolute -top-16 right-[5.8rem]">Using Supabase</h1>
 
-        <h1 className="text-3xl">Using Supabase</h1>
-
-        <Tabs defaultValue="login" className="w-[400px]">
             <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="login">Login</TabsTrigger>
                 <TabsTrigger value="register">Register</TabsTrigger>
@@ -66,8 +64,12 @@ export default function Login() {
                                 onChange={(e) => { setPassword(e.target.value) }} />
                         </div>
                     </CardContent>
-                    <CardFooter>
-                        <Button onClick={login}>Confirm</Button>
+                    <CardFooter className="flex flex-col">
+                        <Button className='w-full' onClick={login}>Confirm</Button>
+                        <p>or</p>
+                        <Button className='w-full mb-2' variant='outline' onClick={() => { }}> <FcGoogle /> Log In with Google</Button>
+                        <Button className='w-full' variant='outline' onClick={() => { }}> <GrGithub /> Log In with GitHub</Button>
+
                     </CardFooter>
                 </Card>
             </TabsContent>
