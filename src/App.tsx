@@ -4,6 +4,10 @@ import { Toaster } from 'sonner'
 import { useAuth } from '@/hooks/authProvider'
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
 
+//TODO: Change supabase url to -> https://usingsupabase.onrender.com
+//TODO: Implement Storages and buckets
+//TODO: Create an shadcn sidebar
+
 export default function App() {
   const session = useAuth()
 
@@ -14,7 +18,7 @@ export default function App() {
     {
       path: "/Home", element: (session ? <Home /> : <Navigate to="/" />)
     },
-  ]); 
+  ]);
 
   return (
     <>
@@ -23,6 +27,5 @@ export default function App() {
       <Toaster />
     </>
   )
-
 
 }
