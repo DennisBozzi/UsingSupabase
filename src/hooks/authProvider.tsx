@@ -61,4 +61,4 @@ async function signInGitHub() {
     return { data, error };
 }
 
-export { useAuth, signOut, signIn, signUp, signInGoogle, signInGitHub }
+export { supabase, useAuth, signOut, signIn, signUp, signInGoogle, signInGitHub }

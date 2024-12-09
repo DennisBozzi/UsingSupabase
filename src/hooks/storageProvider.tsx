@@ -11,4 +11,27 @@ async function insertItem(bucketName: string, fileName: string, file: File) {
     return { data, error }
 }
 
-export { insertItem }
+async function getImages(bucketName: string) {
+    const { data } = await supabase.storage
+        .from(bucketName)
+        .list();
+
+    const urls = data?.map(file => {
+        const { data } = supabase.storage
+            .from(bucketName)
+            .getPublicUrl(file.name);
+
+        return data;
+    }).filter(publicUrl => publicUrl !== null);
+
+    return { data: urls };
+}
+
+async function createBucket(bucketName: string) {
+    const { data, error } = await supabase.storage.
+        createBucket(bucketName)
+
+    return { data, error }
+}
+
+export { insertItem, createBucket, getImages }
