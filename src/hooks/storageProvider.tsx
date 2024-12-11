@@ -1,22 +1,37 @@
-import { createClient } from '@supabase/supabase-js'
+import { generateBlurhash } from '@/lib/encodeBlurHash';
+import { successToast, supabaseInstance, warningToast } from '@/lib/utils';
+import { insertBlurhash } from './dbProvider';
 
-const apiKey = import.meta.env.VITE_API_KEY;
-const supabase = createClient('https://toadqdstdkrpfrjldpid.supabase.co', apiKey)
+const supabase = supabaseInstance();
 
 async function insertItem(bucketName: string, fileName: string, file: File) {
     const { data, error } = await supabase.storage
         .from(bucketName)
         .upload(fileName, file)
 
+    if (error?.message == "The resource already exists")
+        return warningToast("File already exists", "Please choose another file name")
+
+    const imageUrl = supabase.storage
+        .from(bucketName)
+        .getPublicUrl(fileName).data.publicUrl;
+
+    const blurhash = await generateBlurhash(imageUrl);
+
+    if (data)
+        insertBlurhash(blurhash, data.id);
+
+    successToast("File uploaded", "File uploaded successfully")
+
     return { data, error }
 }
 
-async function getImages(bucketName: string) {
+async function getImagesUrls(bucketName: string) {
     const { data } = await supabase.storage
         .from(bucketName)
         .list();
 
-    const urls = data?.map(file => {
+    const imgUrls = data?.map(file => {
         const { data } = supabase.storage
             .from(bucketName)
             .getPublicUrl(file.name);
@@ -24,7 +39,16 @@ async function getImages(bucketName: string) {
         return data;
     }).filter(publicUrl => publicUrl !== null);
 
-    return { data: urls };
+    return { data: imgUrls };
+}
+
+async function getImages(bucketName: string) {
+    const { data } = await supabase.storage
+        .from(bucketName)
+        .list();
+
+    var imgs = data;
+    return { imgs };
 }
 
 async function createBucket(bucketName: string) {
@@ -34,4 +58,4 @@ async function createBucket(bucketName: string) {
     return { data, error }
 }
 
-export { insertItem, createBucket, getImages }
+export { insertItem, createBucket, getImagesUrls, getImages }

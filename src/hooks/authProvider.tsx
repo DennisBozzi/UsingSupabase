@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
-import { createClient, Session } from '@supabase/supabase-js'
+import { Session } from '@supabase/supabase-js'
+import { supabaseInstance } from '@/lib/utils';
 
-const apiKey = import.meta.env.VITE_API_KEY;
-const supabase = createClient('https://toadqdstdkrpfrjldpid.supabase.co', apiKey)
+const supabase = supabaseInstance();
 
 function useAuth() {
     const [session, setSession] = useState<Session | null>(null)
@@ -61,4 +61,4 @@ async function signInGitHub() {
     return { data, error };
 }
 
-export { supabase, useAuth, signOut, signIn, signUp, signInGoogle, signInGitHub }
+export {  useAuth, signOut, signIn, signUp, signInGoogle, signInGitHub }

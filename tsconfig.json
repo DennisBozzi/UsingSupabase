@@ -1,9 +1,6 @@
 {
   "compilerOptions": {
     "forceConsistentCasingInFileNames": true,
-    "module": "commonjs",
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
     "strict": true,
     "baseUrl": ".",
     "paths": {

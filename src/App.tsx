@@ -4,7 +4,7 @@ import Storage from './screens/storage'
 import Layout from './components/layout'
 import { Toaster } from 'sonner'
 import { useAuth } from '@/hooks/authProvider'
-import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
+import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom'
 import { TooltipProvider } from '@radix-ui/react-tooltip'
 
 //TODO: Change supabase url to -> https://usingsupabase.onrender.com
@@ -13,26 +13,17 @@ import { TooltipProvider } from '@radix-ui/react-tooltip'
 export default function App() {
   const session = useAuth()
 
-  const router = createBrowserRouter([
-    {
-      path: "/*", element: (!session ? <Login /> : <Navigate to="/home" />)
-    },
-    {
-      path: "/home", element: (session ? <Layout children={<Home />} /> : <Navigate to="/" />)
-    },
-    {
-      path: "/storage", element: (session ? <Layout children={<Storage />} /> : <Navigate to="/" />)
-    },
-  ]);
-
   return (
-    <>
+    <Router>
       <TooltipProvider>
-        < RouterProvider router={router} >
-        </RouterProvider>
+        <Routes>
+          <Route path="/" element={!session ? <Login /> : <Navigate to="/home" />} />
+          <Route path="/home" element={session ? <Layout><Home /></Layout> : <Navigate to="/" />} />
+          <Route path="/storage" element={session ? <Layout><Storage /></Layout> : <Navigate to="/" />} />
+        </Routes>
       </TooltipProvider>
       <Toaster />
-    </>
+    </Router>
   )
 
 }

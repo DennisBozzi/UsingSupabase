@@ -19,7 +19,7 @@ const items = [
   }
 ]
 
-export function AppSidebar(children: any) {
+export function AppSidebar() {
   const location = useLocation();
   const pathname = location.pathname;
   const markedClass = 'flex h-9 w-9 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-colors hover:text-foreground md:h-8 md:w-8';
@@ -37,8 +37,8 @@ export function AppSidebar(children: any) {
             <RiSupabaseFill className="h-5 w-5" />
           </Link>
 
-          {items.map((item) => (
-            <Tooltip>
+          {items.map((item, i) => (
+            <Tooltip key={i}>
               <TooltipTrigger asChild>
                 <Link to={item.url} className={isMarked(item.url)} >
                   <item.icon className="h-5 w-5" />
@@ -98,7 +98,6 @@ export function AppSidebar(children: any) {
           </Tooltip>
         </nav>
       </aside>
-      {children.children}
     </>
   )
 }
