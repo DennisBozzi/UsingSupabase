@@ -7,16 +7,17 @@ const ImageComponent = ({ src, hash }: { src: string, hash: string }) => {
   useEffect(() => {
     const img = new Image();
     img.onload = () => {
-      setImageLoaded(true);
+      setTimeout(() => {setImageLoaded(true);}, 0);
+      
     };
     img.src = src;
   }, [src]);
 
   return (
-    <>
-      {!imageLoaded && <Blurhash hash={hash} height={384} width={384} punch={1} />}
-      {imageLoaded && <img src={src} alt="" className='h-96 w-96 object-cover object-top' />}
-    </>
+    <div className='cursor-pointer'>
+      {!imageLoaded && <Blurhash hash={hash} height={192} width={192} punch={1} className='hidden'/>}
+      {imageLoaded && <img src={src} alt="" className='h-48 w-48 object-cover rounded-xl'/>}
+    </div>
   );
 };
 

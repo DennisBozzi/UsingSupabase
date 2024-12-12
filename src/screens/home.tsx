@@ -6,12 +6,14 @@ import { BsDoorClosed, BsCloud } from 'react-icons/bs';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { insertItem, getImagesUrls } from '@/hooks/storageProvider';
 import { ImageComponent } from '@/components/imageComponent';
-import { Blurhash } from 'react-blurhash';
+import InfiniteScroll from 'react-infinite-scroll-component';
 
 const Home = () => {
     const [file, setFile] = useState<File | null>(null);
     const [fileUrl, setFileUrl] = useState<string>('');
     const [urls, setUrls] = useState<any[]>([]);
+    const [displayedUrls, setDisplayedUrls] = useState<any[]>([]);
+    const [page, setPage] = useState<number>(0);
 
     useEffect(() => {
         const fetchUrls = async () => {
@@ -19,18 +21,29 @@ const Home = () => {
             setUrls(data && data.length > 0 ? data : []);
         };
         fetchUrls();
-    }, []);
+    });
 
     useEffect(() => {
         if (file)
             setFileUrl(URL.createObjectURL(file))
     }, [file])
 
-    return (
+    const fetchMoreImages = () => {
+        setPage((prevPage) => {
+            const page = prevPage + 1;
+            const newUrls = urls.slice(prevPage * 10, page * 10);
+            setDisplayedUrls([...displayedUrls, ...newUrls]);
+            return page;
+        });
+    };
 
-        <div id='gallery' className='h-screen overflow-y-auto p-4 w-full'>
+    return (
+        <div className='h-screen overflow-y-auto p-4 w-full'>
             <canvas id='canvas' className='hidden' />
-            <Button onClick={() => console.log(urls)}>
+            <Button onClick={() => fetchMoreImages()}>
+                Teste
+            </Button>
+            <Button onClick={() => { setDisplayedUrls([]), setPage(0), console.clear() }}>
                 Teste
             </Button>
             <Button className="p-0 w-48 mx-auto">
@@ -39,21 +52,6 @@ const Home = () => {
                 </Label>
             </Button>
 
-            <Input type="file" id="fileInput" className="hidden" onChange={(e) => {
-                setFile(e.target.files?.[0] ? e.target.files[0] : file)
-            }} />
-
-            <div className='flex flex-wrap'>
-                {
-                    urls.length > 0 && urls.map((url: any, i: number) => {
-                        return (
-                            <ImageComponent key={i} src={url.publicUrl} hash={url.blurHash} />
-                        );
-                    })
-                }
-            </div>
-
-            {/* ------------------------------------------------------------------------------- */}
             <div className={file ? 'mx-auto max-w-[1050px] w-full flex flex-col gap-2' : 'hidden'}>
                 <AspectRatio ratio={16 / 9}>
                     <img src={fileUrl} className='h-full w-full rounded-md object-cover' alt="" />
@@ -69,7 +67,31 @@ const Home = () => {
                 </div>
             </div>
 
-        </div>
+            <Input type="file" id="fileInput" className="hidden" onChange={(e) => {
+                setFile(e.target.files?.[0] ? e.target.files[0] : file)
+            }} />
+
+            {/* ------------------------------------------------------------------------------- */}
+
+            <div id='gallery' className='flex flex-wrap gap-6 p-2'>
+
+                <InfiniteScroll
+                    dataLength={displayedUrls.length}
+                    next={fetchMoreImages}
+                    hasMore={displayedUrls.length < urls.length}
+                    loader={<h4>Loading...</h4>}
+                    className='flex flex-wrap gap-6 p-2'
+                >
+                    {displayedUrls.map((url, index) => (
+                        <ImageComponent key={index} hash={url.blurHash} src={url.publicUrl} />
+                    ))}
+                </InfiniteScroll>
+            </div>
+
+            {/* ------------------------------------------------------------------------------- */}
+
+
+        </div >
     );
 };
 

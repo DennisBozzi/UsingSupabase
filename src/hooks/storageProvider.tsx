@@ -1,6 +1,7 @@
 import { generateBlurhash } from '@/lib/encodeBlurHash';
 import { successToast, supabaseInstance, warningToast } from '@/lib/utils';
 import { getBlurhash, insertBlurhash } from './dbProvider';
+import { sortBy } from 'lodash';
 
 const supabase = supabaseInstance();
 
@@ -42,6 +43,7 @@ async function getImagesUrls(bucketName: string) {
                     fileId: file.id,
                     fileName: file.name,
                     blurHash: blurHash.blur_hash,
+                    created_at: file.created_at,
                     publicUrl: supabase.storage
                         .from(bucketName)
                         .getPublicUrl(file.name).data.publicUrl
@@ -49,6 +51,8 @@ async function getImagesUrls(bucketName: string) {
             }
         })
     })
+
+    imagesAndBlurs = sortBy(imagesAndBlurs, ['created_at']).reverse();
 
     return { data: imagesAndBlurs };
 }
