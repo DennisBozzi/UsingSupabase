@@ -1,6 +1,6 @@
 import { generateBlurhash } from '@/lib/encodeBlurHash';
 import { successToast, supabaseInstance, warningToast } from '@/lib/utils';
-import { insertBlurhash } from './dbProvider';
+import { getBlurhash, insertBlurhash } from './dbProvider';
 
 const supabase = supabaseInstance();
 
@@ -31,15 +31,26 @@ async function getImagesUrls(bucketName: string) {
         .from(bucketName)
         .list();
 
-    const imgUrls = data?.map(file => {
-        const { data } = supabase.storage
-            .from(bucketName)
-            .getPublicUrl(file.name);
+    const blurHashs = await getBlurhash();
 
-        return data;
-    }).filter(publicUrl => publicUrl !== null);
+    var imagesAndBlurs: any = [];
 
-    return { data: imgUrls };
+    data?.map(file => {
+        blurHashs?.map(blurHash => {
+            if (file.id === blurHash.id_image) {
+                imagesAndBlurs.push({
+                    fileId: file.id,
+                    fileName: file.name,
+                    blurHash: blurHash.blur_hash,
+                    publicUrl: supabase.storage
+                        .from(bucketName)
+                        .getPublicUrl(file.name).data.publicUrl
+                })
+            }
+        })
+    })
+
+    return { data: imagesAndBlurs };
 }
 
 async function getImages(bucketName: string) {

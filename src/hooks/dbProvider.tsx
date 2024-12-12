@@ -15,3 +15,11 @@ export async function insertBlurhash(hash: string, imageId: string) {
 
   return { data, error }
 }
+
+export async function getBlurhash() {
+  const { data } = await supabase
+    .from('files')
+    .select()
+
+  return data;
+}

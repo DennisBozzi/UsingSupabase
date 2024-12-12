@@ -5,11 +5,13 @@ import { Button } from '@/components/ui/button';
 import { BsDoorClosed, BsCloud } from 'react-icons/bs';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import { insertItem, getImagesUrls } from '@/hooks/storageProvider';
+import { ImageComponent } from '@/components/imageComponent';
+import { Blurhash } from 'react-blurhash';
 
 const Home = () => {
     const [file, setFile] = useState<File | null>(null);
     const [fileUrl, setFileUrl] = useState<string>('');
-    const [urls, setUrls] = useState<{ publicUrl: string, }[]>([]);
+    const [urls, setUrls] = useState<any[]>([]);
 
     useEffect(() => {
         const fetchUrls = async () => {
@@ -27,7 +29,7 @@ const Home = () => {
     return (
 
         <div id='gallery' className='h-screen overflow-y-auto p-4 w-full'>
-            <canvas id='canvas' className='hidden'/>
+            <canvas id='canvas' className='hidden' />
             <Button onClick={() => console.log(urls)}>
                 Teste
             </Button>
@@ -40,15 +42,18 @@ const Home = () => {
             <Input type="file" id="fileInput" className="hidden" onChange={(e) => {
                 setFile(e.target.files?.[0] ? e.target.files[0] : file)
             }} />
-            <div className='flex flex-wrap'>
 
-                {urls.map((url, i) => (
-                    <img key={i} src={url.publicUrl}
-                        className='p-4 object-cover max-w-96 max-h-96 flex-1 gap-8 lazy-load-image'
-                    />
-                ))}
+            <div className='flex flex-wrap'>
+                {
+                    urls.length > 0 && urls.map((url: any, i: number) => {
+                        return (
+                            <ImageComponent key={i} src={url.publicUrl} hash={url.blurHash} />
+                        );
+                    })
+                }
             </div>
 
+            {/* ------------------------------------------------------------------------------- */}
             <div className={file ? 'mx-auto max-w-[1050px] w-full flex flex-col gap-2' : 'hidden'}>
                 <AspectRatio ratio={16 / 9}>
                     <img src={fileUrl} className='h-full w-full rounded-md object-cover' alt="" />
@@ -63,9 +68,6 @@ const Home = () => {
                     </div>
                 </div>
             </div>
-
-
-            {/* <img src={urls[0]} alt="" /> */}
 
         </div>
     );
