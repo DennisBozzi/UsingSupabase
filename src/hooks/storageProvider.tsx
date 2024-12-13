@@ -1,7 +1,5 @@
 import { generateBlurhash } from '@/lib/encodeBlurHash';
 import { successToast, supabaseInstance, warningToast } from '@/lib/utils';
-import { getBlurhash, insertBlurhash } from './dbProvider';
-import { sortBy } from 'lodash';
 
 const supabase = supabaseInstance();
 
@@ -13,48 +11,37 @@ async function insertItem(bucketName: string, fileName: string, file: File) {
     if (error?.message == "The resource already exists")
         return warningToast("File already exists", "Please choose another file name")
 
-    const imageUrl = supabase.storage
-        .from(bucketName)
-        .getPublicUrl(fileName).data.publicUrl;
-
-    const blurhash = await generateBlurhash(imageUrl);
-
-    if (data)
-        insertBlurhash(blurhash, data.id);
-
     successToast("File uploaded", "File uploaded successfully")
 
     return { data, error }
 }
 
-async function getImagesUrls(bucketName: string) {
+async function getImagesUrls(bucketName: string, page: number) {
+
     const { data } = await supabase.storage
         .from(bucketName)
-        .list();
+        .list('',
+            {
+                limit: 5, offset: page * 5, sortBy: {
+                    column: 'created_at', order: 'desc'
+                }
+            }
+        );
 
-    const blurHashs = await getBlurhash();
-
-    var imagesAndBlurs: any = [];
+    var coolArray: any = [];
 
     data?.map(file => {
-        blurHashs?.map(blurHash => {
-            if (file.id === blurHash.id_image) {
-                imagesAndBlurs.push({
-                    fileId: file.id,
-                    fileName: file.name,
-                    blurHash: blurHash.blur_hash,
-                    created_at: file.created_at,
-                    publicUrl: supabase.storage
-                        .from(bucketName)
-                        .getPublicUrl(file.name).data.publicUrl
-                })
-            }
+        coolArray.push({
+            fileId: file.id,
+            fileName: file.name,
+            created_at: file.created_at,
+            publicUrl: supabase.storage
+                .from(bucketName)
+                .getPublicUrl(file.name).data.publicUrl
         })
     })
 
-    imagesAndBlurs = sortBy(imagesAndBlurs, ['created_at']).reverse();
-
-    return { data: imagesAndBlurs };
+    return { data: coolArray };
 }
 
 async function getImages(bucketName: string) {
