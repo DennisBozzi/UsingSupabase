@@ -1,4 +1,3 @@
-import { generateBlurhash } from '@/lib/encodeBlurHash';
 import { successToast, supabaseInstance, warningToast } from '@/lib/utils';
 
 const supabase = supabaseInstance();
