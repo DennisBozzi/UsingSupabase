@@ -13,24 +13,30 @@ const Home = () => {
     const [fileUrl, setFileUrl] = useState<string>('');
     const [urls, setUrls] = useState<any[]>([]);
     const [page, setPage] = useState<number>(0);
+    const [hasMore, setHasMore] = useState<boolean>(true);
 
-    const fetchUrls = async () => {
-        const { data } = await getImagesUrls('gallery', page);
+    const fetchUrls = async (quantity: number) => {
+        const { data } = await getImagesUrls('gallery', page, quantity);
         setUrls(data ? [...urls, ...data] : [...urls, ...[]]);
         setPage(page + 1);
     }
 
     useEffect(() => {
-        fetchUrls()
+        if (urls.length == 168) {
+            setHasMore(false)
+        }
+    }, [urls])
+
+    useEffect(() => {
+        fetchUrls(36)
         if (file)
             setFileUrl(URL.createObjectURL(file))
     }, [file])
 
-
     return (
-        <div className='h-screen overflow-y-auto p-4 w-full'>
+        <div id='gallery' className='h-screen overflow-y-auto p-4 w-full'>
             <canvas id='canvas' className='hidden' />
-            <Button onClick={() => { fetchUrls() }}>
+            <Button onClick={() => { fetchUrls(5) }}>
                 Fetch Images
             </Button>
             <Button onClick={() => { setUrls([]), setPage(0), console.clear() }}>
@@ -65,15 +71,16 @@ const Home = () => {
 
             {/* ------------------------------------------------------------------------------- */}
 
-            <div id='gallery' className='flex flex-wrap gap-6 p-2'>
+            <div className='flex flex-wrap gap-6 p-2'>
 
                 <InfiniteScroll
-                    dataLength={100}
-                    next={fetchUrls}
+                    dataLength={urls.length}
+                    next={() => fetchUrls(8)}
                     scrollableTarget='gallery'
-                    hasMore={true}
+                    hasMore={hasMore}
                     loader={<h4>Loading...</h4>}
                     className='flex flex-wrap gap-6 p-2'
+                    endMessage={<h4 className='w-full text-center'>Finish</h4>}
                 >
                     {urls.map((url, index) => (
                         <ImageComponent key={index} src={url.publicUrl} />

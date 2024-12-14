@@ -15,13 +15,13 @@ async function insertItem(bucketName: string, fileName: string, file: File) {
     return { data, error }
 }
 
-async function getImagesUrls(bucketName: string, page: number) {
+async function getImagesUrls(bucketName: string, page: number, quantity: number) {
 
     const { data } = await supabase.storage
         .from(bucketName)
         .list('',
             {
-                limit: 5, offset: page * 5, sortBy: {
+                limit: quantity, offset: page * 5, sortBy: {
                     column: 'created_at', order: 'desc'
                 }
             }
