@@ -1,31 +1,23 @@
 import { useState, useEffect } from 'react';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { BsDoorClosed, BsCloud } from 'react-icons/bs';
 import { AspectRatio } from '@/components/ui/aspect-ratio';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { ImageComponent } from '@/components/imageComponent';
-import { insertItem, getImagesUrls } from '@/hooks/storageProvider';
+import { insertItem, getImagesUrls, hasMore } from '@/hooks/storageProvider';
+import Masonry, { ResponsiveMasonry } from 'react-responsive-masonry';
+import { Label } from '@/components/ui/label';
 
 const Home = () => {
     const [file, setFile] = useState<File | null>(null);
     const [fileUrl, setFileUrl] = useState<string>('');
     const [urls, setUrls] = useState<any[]>([]);
-    const [page, setPage] = useState<number>(0);
-    const [hasMore, setHasMore] = useState<boolean>(true);
 
     const fetchUrls = async (quantity: number) => {
-        const { data } = await getImagesUrls('gallery', page, quantity);
+        const { data } = await getImagesUrls('gallery', urls.length, quantity);
         setUrls(data ? [...urls, ...data] : [...urls, ...[]]);
-        setPage(page + 1);
     }
-
-    useEffect(() => {
-        if (urls.length == 168) {
-            setHasMore(false)
-        }
-    }, [urls])
 
     useEffect(() => {
         fetchUrls(36)
@@ -34,12 +26,12 @@ const Home = () => {
     }, [file])
 
     return (
-        <div id='gallery' className='h-screen overflow-y-auto p-4 w-full'>
+        <div id='gallery' className='h-screen overflow-y-auto px-2 sm:px-4 py-4 w-full flex flex-col items-center'>
             <canvas id='canvas' className='hidden' />
             <Button onClick={() => { fetchUrls(5) }}>
                 Fetch Images
             </Button>
-            <Button onClick={() => { setUrls([]), setPage(0), console.clear() }}>
+            <Button onClick={() => { setUrls([]), console.clear() }}>
                 Clear Images
             </Button>
             <Button className="p-0 w-48 mx-auto">
@@ -71,7 +63,7 @@ const Home = () => {
 
             {/* ------------------------------------------------------------------------------- */}
 
-            <div className='flex flex-wrap gap-6 p-2'>
+            <div className='flex gap-6 p-2 w-full'>
 
                 <InfiniteScroll
                     dataLength={urls.length}
@@ -83,7 +75,7 @@ const Home = () => {
                     endMessage={<h4 className='w-full text-center'>Finish</h4>}
                 >
                     {urls.map((url, index) => (
-                        <ImageComponent key={index} src={url.publicUrl} />
+                        <ImageComponent key={index} obj={url} />
                     ))}
                 </InfiniteScroll>
             </div>

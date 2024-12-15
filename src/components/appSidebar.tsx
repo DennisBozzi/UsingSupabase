@@ -28,7 +28,8 @@ export function AppSidebar() {
 
   return (
     <>
-      <aside className="h-lvh inset-y-0 left-0 z-10 flex-col border-r bg-background flex">
+      <aside className="h-lvh sm:flex inset-y-0 left-0 z-10 flex-col border-r bg-background hidden">
+        
         {/* Body */}
         <nav className="flex flex-col items-center gap-4 px-2 py-4">
           <Link to='/home' className="group flex h-9 w-9 shrink-0 items-center justify-center 

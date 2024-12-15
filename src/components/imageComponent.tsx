@@ -1,23 +1,33 @@
 import { useEffect, useState } from 'react';
 import { Skeleton } from './ui/skeleton';
 
-const ImageComponent = ({ src }: { src: string }) => {
+const ImageComponent = ({ obj }: { obj: any }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [formatedName, setFormatedName] = useState(obj.fileName);
 
   useEffect(() => {
-    const img = new Image();
-    img.onload = () => {
-      setTimeout(() => { setImageLoaded(true); }, 0);
 
+    if (formatedName.length > 20) {
+      setFormatedName(formatedName.slice(0, 17) + '...');
+    }
+
+    const img = new Image();
+
+    img.onload = () => {
+      setImageLoaded(true);
     };
-    img.src = src;
-  }, [src]);
+
+    img.src = obj.publicUrl;
+
+  }, [obj.publicUrl]);
 
   return (
-    <div className='cursor-pointer'>
-      {!imageLoaded && <Skeleton className='h-48 w-48 rounded-xl' />}
-      {imageLoaded && <img src={src} alt="" className='h-48 w-48 object-cover rounded-xl' />}
-    </div>
+
+    <>
+      {!imageLoaded && <Skeleton className='w-full rounded-xl' />}
+      {imageLoaded && <img src={obj.publicUrl} alt="" className='border-primary object-cover rounded-xl' />}
+    </>
+
   );
 };
 

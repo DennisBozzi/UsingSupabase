@@ -9,6 +9,7 @@ import { TooltipProvider } from '@radix-ui/react-tooltip'
 
 //TODO: Change supabase url to -> https://usingsupabase.onrender.com
 //TODO: Create reusables settings and logout dialog
+//TODO: Create a sheet menu navigation
 
 export default function App() {
   const session = useAuth()

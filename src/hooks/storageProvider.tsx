@@ -2,6 +2,8 @@ import { successToast, supabaseInstance, warningToast } from '@/lib/utils';
 
 const supabase = supabaseInstance();
 
+var hasMore: boolean = false;
+
 async function insertItem(bucketName: string, fileName: string, file: File) {
     const { data, error } = await supabase.storage
         .from(bucketName)
@@ -15,19 +17,17 @@ async function insertItem(bucketName: string, fileName: string, file: File) {
     return { data, error }
 }
 
-async function getImagesUrls(bucketName: string, page: number, quantity: number) {
+async function getImagesUrls(bucketName: string, offset: number, quantity: number) {
+
+    var coolArray: any = [];
 
     const { data } = await supabase.storage
         .from(bucketName)
-        .list('',
-            {
-                limit: quantity, offset: page * 5, sortBy: {
-                    column: 'created_at', order: 'desc'
-                }
+        .list('', {
+            limit: quantity, offset: offset, sortBy: {
+                column: 'created_at', order: 'desc'
             }
-        );
-
-    var coolArray: any = [];
+        });
 
     data?.map(file => {
         coolArray.push({
@@ -39,6 +39,8 @@ async function getImagesUrls(bucketName: string, page: number, quantity: number)
                 .getPublicUrl(file.name).data.publicUrl
         })
     })
+
+    hasMore = coolArray.length < quantity ? false : true;
 
     return { data: coolArray };
 }
@@ -59,4 +61,4 @@ async function createBucket(bucketName: string) {
     return { data, error }
 }
 
-export { insertItem, createBucket, getImagesUrls, getImages }
+export { insertItem, createBucket, getImagesUrls, getImages, hasMore }
